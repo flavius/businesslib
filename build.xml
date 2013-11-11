@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="businesslib" default="testsuite">
+    <!-- <php expression="include('vendor/autoload.php')"/> -->
+    <property name="basedir" value="." override="true"/>
+    <property name="source" value="${basedir}/library"/>
+    <property name="tests" value="${basedir}/tests"/>
+    <patternset id="allPHPFilesRecursive">
+        <include name="**/*.php"/>
+    </patternset>
+    <patternset id="allTestFilesRecursive">
+        <include name="**/*Test.php"/>
+    </patternset>
+    <fileset dir="${source}" id="sourceWithoutTests">
+        <patternset refid="allPHPFilesRecursive"/>
+    </fileset>
+    <fileset dir="${tests}" id="tests">
+        <patternset refid="allTestFilesRecursive"/>
+    </fileset>
+    <fileset id="sourceAndTests">
+        <patternset refid="allPHPFilesRecursive"/>
+        <patternset refid="allTestFilesRecursive"/>
+    </fileset>
+
+    <target name="prepare" description="Clean up and create artifact directories">
+        <delete dir="${basedir}/reports"/>
+        <!--
+        <delete>
+            <fileset dir="/tmp">
+                <include name="cachegrind.out.*"/>
+            </fileset>
+        </delete>
+        -->
+        <mkdir dir="${basedir}/reports/coverage"/>
+        <mkdir dir="${basedir}/reports/tests"/>
+    </target>
+
+    <target name="testsuite" description="Run unit tests" depends="prepare">
+        <coverage-setup database="${basedir}/reports/coverage.db">
+            <fileset refid="sourceWithoutTests"/>
+        </coverage-setup>
+        <phpunit haltonfailure="true" haltonerror="true" printsummary="true" codecoverage="true">
+            <formatter todir="${basedir}/reports" type="clover" outfile="clover.xml"/>
+            <formatter todir="${basedir}/reports" type="xml" outfile="junit.xml"/>
+            <batchtest>
+                <fileset refid="tests"/>
+            </batchtest>
+        </phpunit>
+        <coverage-report outfile="${basedir}/reports/coverage.xml">
+            <report todir="${basedir}/reports/coverage"/>
+        </coverage-report>
+        <phpunitreport infile="${basedir}/reports/junit.xml" format="frames" todir="reports/tests"/>
+    </target>
+
+    <target name="docs" description="Generate API documentation using phpDox">
+        <delete dir="${basedir}/docs"/>
+        <mkdir dir="${basedir}/docs"/>
+        <phpdoc2 title="API Documentation" destdir="${basedir}/docs" template="responsive-twig">
+            <fileset refid="sourceAndTests"/>
+        </phpdoc2>
+    </target>
+</project>

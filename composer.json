@@ -1,0 +1,24 @@
+{
+    "name": "flavius/businesslib",
+    "description": "A library for dealing with business processes",
+    "type": "library",
+    "keywords": [
+        "library",
+        "businesslib"
+    ],
+    "homepage": "http://localhost/",
+    "license": "BSD-3-Clause",
+    "require": {
+        "php": ">=5.3.3"
+    },
+    "require-dev": {
+        "phpunit/PHPUnit": "3.7.*",
+        "phing/phing": "dev-master",
+        "phpdocumentor/phpdocumentor": "v2.1.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "Business\\": "library/"
+        }
+    }
+}
